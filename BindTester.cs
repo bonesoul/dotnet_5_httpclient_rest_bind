@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -22,11 +23,14 @@ namespace dotnet_5_httpclient_rest_bind
 
         public readonly ConcurrentBag<IPAddress> PrivateInterfaces;
 
+        public readonly List<IPAddress> DiscoveredAddresses;
+
         public BindTester(ILogger logger)
         {
             _logger = logger;
             PublicInterfaces = new ConcurrentBag<IPAddress>();
             PrivateInterfaces = new ConcurrentBag<IPAddress>();
+            DiscoveredAddresses = new List<IPAddress>();
         }
 
         public async Task DiscoverInterfacesAsync()
@@ -47,24 +51,27 @@ namespace dotnet_5_httpclient_rest_bind
                 // an interface may have multiple ip addresses set, check all of them.
                 var addresses = @interface.GetIPProperties().UnicastAddresses.Where(x => x.Address.AddressFamily == AddressFamily.InterNetwork);
 
-                // loop through all available ip addresses in interface.
-
-                await addresses.ParallelForEachAsync(async entry =>
+                foreach (var entry in addresses)
                 {
-                    var isPublic = await TestInterface(entry.Address);
-                    if (isPublic) PublicInterfaces.Add(entry.Address);
-                    else PrivateInterfaces.Add(entry.Address);
-                }, maxDegreeOfParallelism: 5);
-
-                _logger.Information("discovered a total of {TotalPublic} public and {TotalPrivate} private  interfaces..", PublicInterfaces.Count, PrivateInterfaces.Count);
+                    DiscoveredAddresses.Add(entry.Address);
+                }
             }
+
+            _logger.Information("testing {Count} interfaces..", DiscoveredAddresses.Count);
+
+            // loop through all available ip addresses in interface.
+            await DiscoveredAddresses.ParallelForEachAsync(async entry =>
+            {
+                var isPublic = await TestInterface(entry);
+                if (isPublic) PublicInterfaces.Add(entry);
+                else PrivateInterfaces.Add(entry);
+            }, maxDegreeOfParallelism: 10);
         }
 
         private async Task<bool> TestInterface(IPAddress ipAddress)
         {
             try
             {
-
                 _logger.Information("testing interface: {Interface}..", ipAddress);
 
                 var handler = new HttpClientHandler();

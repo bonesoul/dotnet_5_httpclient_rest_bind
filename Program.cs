@@ -17,5 +17,6 @@ var logger = new LoggerConfiguration()
 var tester = new BindTester(logger);
 await tester.DiscoverInterfacesAsync();
 
+logger.Information("all addresses: {List}", tester.DiscoveredAddresses);
 logger.Information("public interfaces: {List}", tester.PublicInterfaces);
 logger.Information("private interfaces: {List}", tester.PrivateInterfaces);
