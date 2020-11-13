@@ -1,4 +1,4 @@
-# dotnet_5_httpclient_rest_bind
+# httpclient & rest bind interface example
 
 an example for .net 5.0's new [connection abstractions api](https://github.com/dotnet/runtime/issues/1793).
 
