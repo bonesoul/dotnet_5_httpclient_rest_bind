@@ -95,8 +95,8 @@ namespace dotnet_5_httpclient_rest_bind
 
                 _logger.Verbose(
                     ipAddress.ToString() == origin
-                        ? "found public ip: {IpAddress} [received response with origin ip address: {Origin}]"
-                        : "found private ip: {IpAddress} [received response with origin ip address: {Origin}]",
+                        ? "found public ip: {IpAddress} [request ip address: {Origin}]"
+                        : "found private ip: {IpAddress} [request ip address: {Origin}]",
                     ipAddress, origin);
 
                 return ipAddress.ToString() == origin;
