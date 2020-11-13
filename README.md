@@ -14,6 +14,15 @@ this example code will be discovering all interfaces in the system and for every
 
 the code will then read the origin and compare it to actual local interface we binded to. if they are same, will the interface as public. otherwise will mark the interface as private -- as this means the interface is probably behind a NAT. 
 
-# platforms
+# requirements
 
-tested on debian 10 and windows 10. should also work in macos systems.
+- .net 5.0+.
+- tested on debian 10 and windows 10. should also work in macos systems.
+
+# run
+
+you can run the sample with: 
+
+```
+dotnet run dotnet_5_httpclient_rest_bind.csproj 
+```
